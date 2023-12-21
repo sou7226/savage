@@ -18,7 +18,7 @@ const userid = process.env.USERID2;
 const guildId = process.env.GUILD_ID;
 const adminId = process.env.ADMIN_LIST.split(',');
 
-client.on('message', async (message) => {
+client.on('messageCreate', async (message) => {
     const User = await client.users.fetch(userid);
     const myid = client.user.id
     if (adminId.includes(message.author.id) ||
@@ -50,7 +50,6 @@ client.on('message', async (message) => {
         ) {
             targetChannel.send("::atk ")
         }
-
     }
 
 
