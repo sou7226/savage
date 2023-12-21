@@ -49,7 +49,7 @@ client1.on("messageCreate", (message) => {
             if (message.embeds[0].author.name.includes("超激レア")) {
                 message.channel.send("::re ")
             } else {
-                message.channel.send("::i f ")
+                message.channel.send("::atk ")
             }
 
         } else if (embedTitle.includes("戦闘結果")) {
@@ -59,7 +59,7 @@ client1.on("messageCreate", (message) => {
             (message.content.includes(`${client4.user.username}のHP:`) || message.content.includes(`<@${client4.user.id}>はもうやられている`)) &&
             !message.content.includes('を倒した！')
         ) {
-            message.channel.send("::i f ")
+            message.channel.send("::atk ")
         }
 
 
@@ -76,7 +76,7 @@ client2.on("messageCreate", (message) => {
             (message.content.includes(`${client1.user.username}のHP:`) || message.content.includes(`<@${client1.user.id}>はもうやられている`)) &&
             !message.content.includes('を倒した！')
         ) {
-            message.channel.send("::i f ")
+            message.channel.send("::atk ")
         }
         time = setTimeout(() => message.channel?.send("::atk interval"), 8000)
     }
@@ -91,7 +91,7 @@ client3.on("messageCreate", async (message) => {
             (message.content.includes(`${client2.user.username}のHP:`) || message.content.includes(`<@${client2.user.id}>はもうやられている`)) &&
             !message.content.includes('を倒した！')
         ) {
-            message.channel.send("::i f ")
+            message.channel.send("::atk ")
         }
     }
 });
@@ -102,11 +102,11 @@ client4.on("messageCreate", async (message) => {
     ) return;
     if (flag === 1) {
         if (message.content.includes(`${client3.user.username}のHP:`) && !message.content.includes('を倒した！')) {
-            message.channel.send("::i f ")
+            message.channel.send("::atk ")
         } else if (message.content.includes(`<@${client3.user.id}>はもうやられている`)) {
             message.channel.send("::i e ")
             await timeout(5000)
-            message.channel.send("::i f ")
+            message.channel.send("::atk ")
         }
     }
 });
