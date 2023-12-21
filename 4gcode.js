@@ -43,7 +43,7 @@ client.on('message', async (message) => {
         message.channel.send(msg)
     }
     if (message.channel === targetChannel) {
-        if (message.content.includes(`${User.username}のHP:`) && !message.content.includes(`]の攻撃！`)) {
+        if (message.content.includes(`${User.username}のHP:`) && !message.content.includes('を倒した！')) {
             targetChannel.send("::atk ")
         } else if (message.content.includes(`<@${userid}>はもうやられている`)) {
             targetChannel.send("::i e ")
