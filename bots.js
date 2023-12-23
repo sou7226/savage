@@ -13,22 +13,24 @@ client3.once('ready', () => console.log(`${client3.user.username} is ready!`));
 client4.once('ready', () => console.log(`${client4.user.username} is ready!`));
 
 const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-let flag = -1, time, targetChannel1, targetChannel2, targetChannel3, targetChannel4;
+let flag = -1, fbFlag = 1, time, targetChannelID;
+let atkmsg1 = "::atk", atkmsg2 = "::atk", atkmsg3 = "::atk", atkmsg4 = "::atk";
 const guildId = process.env.GUILD_ID;
-const adminId = process.env.ADMIN_LIST.split(',');
+let adminId = new Set(process.env.ADMIN_LIST.split(','));
 
-function setChannel(targetChannel, message) {
+function setChannel(message) {
     if (message.content === "w1start") {
         flag = 1;
         if (flag > 0) {
-            targetChannel = message.channel
+            targetChannelID = message.channel.id
+            adminId.add(message.author.id)
             message.channel.send("```py\nset\n```")
         }
     }
     if (message.content === "w1end") {
         flag = -1;
         if (flag < 0) {
-            targetChannel = null
+            targetChannelID = null
             message.channel.send("```py\nend\n```")
         }
     }
@@ -36,32 +38,39 @@ function setChannel(targetChannel, message) {
 
 
 client1.on("messageCreate", (message) => {
-    if (adminId.includes(message.author.id) ||
+    if (!adminId.has(message.author.id) &&
         message.guild.id !== guildId
     ) return;
-    targetChannel1 = setChannel(targetChannel1, message)
+    setChannel(message)
+    if (message.content.startsWith("s1.")) {
+        msg = message.content.slice(3)
+        message.channel.send(msg)
+    }
+    if (message.content.includes("1.atk")) {
+        atkmsg1 = atkmsg1 === "::atk" ? '::i f' : '::atk'
+    }
     if (
         // 監視対象のチャンネルで、かつEmbedが存在するメッセージの場合
-        targetChannel1.name == message.channel.name &&
+        targetChannelID == message.channel.id &&
         message.embeds.length > 0 &&
         message.embeds[0].title
     ) {
         const embedTitle = message.embeds[0].title;
         if (embedTitle.includes("が待ち構えている")) {
             if (message.embeds[0].author.name.includes("超激レア")) {
-                targetChannel1.send("::re ")
+                message.channel.send("::re ")
             } else {
-                message.channel.send("::i f ")
+                message.channel.send(atkmsg1)
             }
 
         } else if (embedTitle.includes("戦闘結果")) {
         }
-    } else if (targetChannel1.name == message.channel.name) {
+    } else if (targetChannelID == message.channel.id) {
         if (
             (message.content.includes(`${client4.user.username}のHP:`) || message.content.includes(`<@${client4.user.id}>はもうやられている`)) &&
             !message.content.includes('を倒した！')
         ) {
-            message.channel.send("::i f ")
+            message.channel.send(atkmsg1)
         }
 
 
@@ -69,49 +78,83 @@ client1.on("messageCreate", (message) => {
 });
 
 client2.on("messageCreate", (message) => {
-    if (adminId.includes(message.author.id) ||
+    if (!adminId.has(message.author.id) &&
         message.guild.id !== guildId
     ) return;
-    targetChannel2 = setChannel(targetChannel2, message)
+    if (message.content.startsWith("s2.")) {
+        msg = message.content.slice(3)
+        message.channel.send(msg)
+    }
+    if (message.content.includes("2.atk")) {
+        atkmsg2 = atkmsg2 === "::atk" ? '::i f' : '::atk'
+    }
     clearTimeout(time);
-    if (targetChannel2.name == message.channel.name) {
+    if (targetChannelID == message.channel.id) {
         if (
             (message.content.includes(`${client1.user.username}のHP:`) || message.content.includes(`<@${client1.user.id}>はもうやられている`)) &&
-            !targetChannel2.includes('を倒した！')
+            !message.content.includes('を倒した！')
         ) {
-            message.channel.send("::i f ")
+            message.channel.send(atkmsg2)
         }
-        time = setTimeout(() => targetChannel2?.send("::atk interval"), 8000)
+        time = setTimeout(() => message.channel?.send(atkmsg2), 8000)
     }
 });
 
 client3.on("messageCreate", async (message) => {
-    if (adminId.includes(message.author.id) ||
+    if (!adminId.has(message.author.id) &&
         message.guild.id !== guildId
     ) return;
-    targetChannel3 = setChannel(targetChannel3, message)
-    if (targetChannel3.name == message.channel.name) {
-        if (
-            (message.content.includes(`${client2.user.username}のHP:`) || message.content.includes(`<@${client2.user.id}>はもうやられている`)) &&
-            !targetChannel3.includes('を倒した！')
-        ) {
-            message.channel.send("::i f ")
+    if (message.content.startsWith("s3.")) {
+        msg = message.content.slice(3)
+        message.channel.send(msg)
+    }
+    if (message.content.includes("3.atk")) {
+        atkmsg3 = atkmsg3 === "::atk" ? '::i f' : '::atk'
+    }
+    if (targetChannelID == message.channel.id) {
+        if (atkmsg2 === "::atk") {
+            if (
+                (message.content.includes(`${client2.user.username}のHP:`) || message.content.includes(`<@${client2.user.id}>はもうやられている`)) &&
+                !message.content.includes('を倒した！')
+            ) {
+                message.channel.send(atkmsg3)
+            }
         }
     }
 });
 
 client4.on("messageCreate", async (message) => {
-    if (adminId.includes(message.author.id) ||
+    if (!adminId.has(message.author.id) &&
         message.guild.id !== guildId
     ) return;
-    targetChannel4 = setChannel(targetChannel4, message)
-    if (targetChannel4.name == message.channel.name) {
-        if (message.content.includes(`${client3.user.username}のHP:`) && !message.content.includes('を倒した！')) {
-            message.channel.send("::i f ")
-        } else if (message.content.includes(`<@${client3.user.id}>はもうやられている`)) {
-            targetChannel4.send("::i e ")
-            await timeout(5000)
-            message.channel.send("::i f ")
+    if (message.content.includes("4.atk")) {
+        atkmsg4 = atkmsg4 === "::atk" ? '::i f' : '::atk'
+        message.channel.send("change")
+    }
+    if (message.content.startsWith("s4.")) {
+        msg = message.content.slice(3)
+        message.channel.send(msg)
+    }
+
+    if (targetChannelID == message.channel.id) {
+        if (atkmsg3 === "::atk") {
+            if (message.content.includes(`${client3.user.username}のHP:`) && !message.content.includes('を倒した！')) {
+                message.channel.send(atkmsg4)
+            } else if (message.content.includes(`<@${client2.user.id}>はもうやられている`)) {
+                message.channel.send("::i e ")
+                await timeout(5000)
+                message.channel.send(atkmsg4)
+            }
+        } else if (atkmsg3 === "::i f" &&
+            message.author.id === client3.user.id) {
+            const filter = m => m.author.id === "526620171658330112";
+            const collected = await message.channel.awaitMessages({ filter, max: 1, time: 10000 });
+            const response = collected?.first();
+            if (!response?.content.includes('を倒した！') &&
+                response?.content.includes(`${client3.user.username}の攻撃！`)
+            ) {
+                response?.channel.send(atkmsg4)
+            }
         }
     }
 });
