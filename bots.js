@@ -119,6 +119,16 @@ client3.on("messageCreate", async (message) => {
             ) {
                 message.channel.send(atkmsg3)
             }
+        } else if (atkmsg2 === "::i f" &&
+            message.author.id === client2.user.id) {
+            const filter = m => m.author.id === "526620171658330112";
+            const collected = await message.channel.awaitMessages({ filter, max: 1, time: 10000 });
+            const response = collected?.first();
+            if (!response?.content.includes('を倒した！') &&
+                response?.content.includes(`${client2.user.username}の攻撃！`)
+            ) {
+                response?.channel.send(atkmsg3)
+            }
         }
     }
 });
@@ -140,7 +150,7 @@ client4.on("messageCreate", async (message) => {
         if (atkmsg3 === "::atk") {
             if (message.content.includes(`${client3.user.username}のHP:`) && !message.content.includes('を倒した！')) {
                 message.channel.send(atkmsg4)
-            } else if (message.content.includes(`<@${client2.user.id}>はもうやられている`)) {
+            } else if (message.content.includes(`<@${client3.user.id}>はもうやられている`)) {
                 message.channel.send("::i e ")
                 await timeout(5000)
                 message.channel.send(atkmsg4)
