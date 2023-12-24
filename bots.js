@@ -13,10 +13,11 @@ client3.once('ready', () => console.log(`${client3.user.username} is ready!`));
 client4.once('ready', () => console.log(`${client4.user.username} is ready!`));
 
 const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-let flag = -1, fbFlag = 1, time, targetChannelID;
+let flag = -1, time, targetChannelID;
 let atkmsg1 = "::atk", atkmsg2 = "::atk", atkmsg3 = "::atk", atkmsg4 = "::atk";
 const guildId = process.env.GUILD_ID;
 let adminId = new Set(process.env.ADMIN_LIST.split(','));
+const filter = m => m.author.id === "526620171658330112";
 
 function setChannel(message) {
     if (message.content === "w1start") {
@@ -34,16 +35,16 @@ function setChannel(message) {
             message.channel.send("```py\nend\n```")
         }
     }
+
 }
 
-
-client1.on("messageCreate", (message) => {
+client1.on("messageCreate", async (message) => {
     if (!adminId.has(message.author.id) &&
         message.guild.id !== guildId
     ) return;
     setChannel(message)
-    if (message.content.startsWith("s1.")) {
-        msg = message.content.slice(3)
+    if (message.content.startsWith("s1")) {
+        msg = message.content.slice(2)
         message.channel.send(msg)
     }
     if (message.content.includes("1.atk")) {
@@ -77,12 +78,12 @@ client1.on("messageCreate", (message) => {
     }
 });
 
-client2.on("messageCreate", (message) => {
+client2.on("messageCreate", async (message) => {
     if (!adminId.has(message.author.id) &&
         message.guild.id !== guildId
     ) return;
-    if (message.content.startsWith("s2.")) {
-        msg = message.content.slice(3)
+    if (message.content.startsWith("s2")) {
+        msg = message.content.slice(2)
         message.channel.send(msg)
     }
     if (message.content.includes("2.atk")) {
@@ -104,7 +105,7 @@ client3.on("messageCreate", async (message) => {
     if (!adminId.has(message.author.id) &&
         message.guild.id !== guildId
     ) return;
-    if (message.content.startsWith("s3.")) {
+    if (message.content.startsWith("s3")) {
         msg = message.content.slice(3)
         message.channel.send(msg)
     }
@@ -121,7 +122,6 @@ client3.on("messageCreate", async (message) => {
             }
         } else if (atkmsg2 === "::i f" &&
             message.author.id === client2.user.id) {
-            const filter = m => m.author.id === "526620171658330112";
             const collected = await message.channel.awaitMessages({ filter, max: 1, time: 10000 });
             const response = collected?.first();
             if (!response?.content.includes('を倒した！') &&
@@ -141,8 +141,8 @@ client4.on("messageCreate", async (message) => {
         atkmsg4 = atkmsg4 === "::atk" ? '::i f' : '::atk'
         message.channel.send("change")
     }
-    if (message.content.startsWith("s4.")) {
-        msg = message.content.slice(3)
+    if (message.content.startsWith("s4")) {
+        msg = message.content.slice(2)
         message.channel.send(msg)
     }
 
@@ -157,7 +157,6 @@ client4.on("messageCreate", async (message) => {
             }
         } else if (atkmsg3 === "::i f" &&
             message.author.id === client3.user.id) {
-            const filter = m => m.author.id === "526620171658330112";
             const collected = await message.channel.awaitMessages({ filter, max: 1, time: 10000 });
             const response = collected?.first();
             if (!response?.content.includes('を倒した！') &&
