@@ -1,5 +1,4 @@
 const { Client } = require('discord.js-selfbot-v13');
-const dotenv = require('dotenv')
 
 require('dotenv').config();
 const client1 = new Client({ checkUpdate: false });
@@ -13,12 +12,28 @@ client3.once('ready', () => console.log(`${client3.user.username} is ready!`));
 client4.once('ready', () => console.log(`${client4.user.username} is ready!`));
 
 const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-let flag = -1, time, targetChannelID;
+let flag = -1, superRareFlag = 0, time, targetChannelID;
 let atkmsg1 = "::atk", atkmsg2 = "::atk", atkmsg3 = "::atk", atkmsg4 = "::atk";
 const guildId = process.env.GUILD_ID;
 let adminId = new Set(process.env.ADMIN_LIST.split(','));
 const filter = m => m.author.id === "526620171658330112";
 
+async function clickButton(message) {
+    message.channel.send("::sinka")
+    const collected = await message.channel.awaitMessages({ filter, max: 1, time: 10000 });
+    const msg = collected?.first()
+    await msg.clickButton({ row: 0, col: 0 })
+    setTimeout(async () => await msg.clickButton({ row: 0, col: 0 }), 3000)
+}
+async function Eval(message) {
+    const args = message.content.split("\n").slice(1);
+    try {
+        const evaled = eval(args.join("\n"));
+        message.channel.send(`\`\`\`js\n${evaled}\n\`\`\``);
+    } catch (err) {
+        message.channel.send(`\`ERROR\` \`\`\`xl\n${err}\n\`\`\``);
+    }
+}
 function setChannel(message) {
     if (message.content === "w1start") {
         flag = 1;
@@ -50,6 +65,9 @@ client1.on("messageCreate", async (message) => {
     if (message.content.includes("1.atk")) {
         atkmsg1 = atkmsg1 === "::atk" ? '::i f' : '::atk'
     }
+    if (message.content.startsWith("1.eval")) {
+        await Eval(message)
+    }
     if (
         // 監視対象のチャンネルで、かつEmbedが存在するメッセージの場合
         targetChannelID == message.channel.id &&
@@ -59,7 +77,7 @@ client1.on("messageCreate", async (message) => {
         const embedTitle = message.embeds[0].title;
         if (embedTitle.includes("が待ち構えている")) {
             if (message.embeds[0].author.name.includes("超激レア")) {
-                message.channel.send("::re ")
+                superRareFlag = 1
             } else {
                 message.channel.send(atkmsg1)
             }
@@ -89,9 +107,15 @@ client2.on("messageCreate", async (message) => {
     if (message.content.includes("2.atk")) {
         atkmsg2 = atkmsg2 === "::atk" ? '::i f' : '::atk'
     }
-    clearTimeout(time);
+    if (message.content.startsWith("2.eval")) {
+        await Eval(message)
+    }
     if (targetChannelID == message.channel.id) {
-        if (
+        clearTimeout(time);
+        if (superRareFlag === 1) {
+            superRareFlag = 0
+            message.channel.send("::re ")
+        } else if (
             (message.content.includes(`${client1.user.username}のHP:`) || message.content.includes(`<@${client1.user.id}>はもうやられている`)) &&
             !message.content.includes('を倒した！')
         ) {
@@ -111,6 +135,9 @@ client3.on("messageCreate", async (message) => {
     }
     if (message.content.includes("3.atk")) {
         atkmsg3 = atkmsg3 === "::atk" ? '::i f' : '::atk'
+    }
+    if (message.content.startsWith("3.eval")) {
+        await Eval(message)
     }
     if (targetChannelID == message.channel.id) {
         if (atkmsg2 === "::atk") {
@@ -145,7 +172,9 @@ client4.on("messageCreate", async (message) => {
         msg = message.content.slice(2)
         message.channel.send(msg)
     }
-
+    if (message.content.startsWith("4.eval")) {
+        await Eval(message)
+    }
     if (targetChannelID == message.channel.id) {
         if (atkmsg3 === "::atk") {
             if (message.content.includes(`${client3.user.username}のHP:`) && !message.content.includes('を倒した！')) {
