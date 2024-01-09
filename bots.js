@@ -39,6 +39,7 @@ function sendFlagReset() {
         client4: 1
     }
 }
+
 client1.on("messageCreate", async (message) => {
     if (!adminId.has(message.author.id) &&
         message.guild.id !== guildId
@@ -50,6 +51,7 @@ client1.on("messageCreate", async (message) => {
     }
     if (message.content.includes("1.atk")) {
         atkmsg1 = atkmsg1 === "::atk" ? '::i f' : '::atk'
+        message.channel.send(`change ${atkmsg1}`)
     }
     if (message.content.startsWith("1.eval")) {
         await Eval(message)
@@ -92,6 +94,7 @@ client2.on("messageCreate", async (message) => {
     }
     if (message.content.includes("2.atk")) {
         atkmsg2 = atkmsg2 === "::atk" ? '::i f' : '::atk'
+        message.channel.send(`change ${atkmsg2}`)
     }
     if (message.content.startsWith("2.eval")) {
         await Eval(message)
@@ -124,6 +127,7 @@ client3.on("messageCreate", async (message) => {
     }
     if (message.content.includes("3.atk")) {
         atkmsg3 = atkmsg3 === "::atk" ? '::i f' : '::atk'
+        message.channel.send(`change ${atkmsg3}`)
     }
     if (message.content.startsWith("3.eval")) {
         await Eval(message)
@@ -157,7 +161,7 @@ client4.on("messageCreate", async (message) => {
     ) return;
     if (message.content.includes("4.atk")) {
         atkmsg4 = atkmsg4 === "::atk" ? '::i f' : '::atk'
-        message.channel.send("change")
+        message.channel.send(`change ${atkmsg4}`)
     }
     if (message.content.startsWith("s4")) {
         msg = message.content.slice(2)
