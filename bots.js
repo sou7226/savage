@@ -24,7 +24,12 @@ const isAtkMessage = (content, user) => (
 );
 
 let superRareFlag = 0, time, targetChannelID;
-let atkmsg1 = "::atk", atkmsg2 = "::atk", atkmsg3 = "::atk", atkmsg4 = "::atk";
+let atkmsgs = {
+    client1: "::atk",
+    client2: "::atk",
+    client3: "::atk",
+    client4: "::atk"
+}
 let adminId = new Set(process.env.ADMIN_LIST.split(','));
 let sendFlags = {
     client1: 1,
@@ -43,8 +48,8 @@ client1.on("messageCreate", async (message) => {
         message.channel.send(msg)
     }
     if (message.content.includes("1.atk")) {
-        atkmsg1 = atkmsg1 === "::atk" ? '::i f' : '::atk'
-        message.channel.send(`change ${atkmsg1}`)
+        atkmsgs.client1 = atkmsgs.client1 === "::atk" ? '::i f' : '::atk'
+        message.channel.send(`change ${atkmsgs.client1}`)
     }
     if (message.content.startsWith("1.eval")) {
         await Eval(message)
@@ -61,13 +66,13 @@ client1.on("messageCreate", async (message) => {
                 superRareFlag = 1
             } else {
                 await timeout(coolTime)
-                message.channel.send(atkmsg1)
+                message.channel.send(atkmsgs.client1)
             }
         }
     } else if (targetChannelID == message.channel.id) {
         if (isAtkMessage(message.content, client4.user)) {
             await timeout(coolTime)
-            message.channel.send(atkmsg1)
+            message.channel.send(atkmsgs.client1)
         }
         if (message.content.includes(`${client1.user.username}はやられてしまった。。。`)) {
             sendFlags.client1 = 1
@@ -84,8 +89,8 @@ client2.on("messageCreate", async (message) => {
         message.channel.send(msg)
     }
     if (message.content.includes("2.atk")) {
-        atkmsg2 = atkmsg2 === "::atk" ? '::i f' : '::atk'
-        message.channel.send(`change ${atkmsg2}`)
+        atkmsgs.client2 = atkmsgs.client2 === "::atk" ? '::i f' : '::atk'
+        message.channel.send(`change ${atkmsgs.client2}`)
     }
     if (message.content.startsWith("2.eval")) {
         await Eval(message)
@@ -97,12 +102,12 @@ client2.on("messageCreate", async (message) => {
             message.channel.send("::re ")
         } else if (isAtkMessage(message.content, client1.user)) {
             await timeout(coolTime)
-            message.channel.send(atkmsg2)
+            message.channel.send(atkmsgs.client2)
         }
         if (message.content.includes(`${client2.user.username}はやられてしまった。。。`)) {
             sendFlags.client2 = 1
         }
-        time = setTimeout(() => message.channel?.send(atkmsg2), 8000)
+        time = setTimeout(() => message.channel?.send(atkmsgs.client2), 8000)
 
     }
 });
@@ -117,19 +122,19 @@ client3.on("messageCreate", async (message) => {
         message.channel.send(msg)
     }
     if (message.content.includes("3.atk")) {
-        atkmsg3 = atkmsg3 === "::atk" ? '::i f' : '::atk'
-        message.channel.send(`change ${atkmsg3}`)
+        atkmsgs.client3 = atkmsgs.client3 === "::atk" ? '::i f' : '::atk'
+        message.channel.send(`change ${atkmsgs.client3}`)
     }
     if (message.content.startsWith("3.eval")) {
         await Eval(message)
     }
     if (targetChannelID == message.channel.id) {
-        if (atkmsg2 === "::atk") {
+        if (atkmsgs.client2 === "::atk") {
             if (isAtkMessage(message.content, client2.user)) {
                 await timeout(coolTime)
-                message.channel.send(atkmsg3)
+                message.channel.send(atkmsgs.client3)
             }
-        } else if (atkmsg2 === "::i f" &&
+        } else if (atkmsgs.client2 === "::i f" &&
             message.author.id === client2.user.id) {
             const collected = await message.channel.awaitMessages({ filter, max: 1, time: 10000 });
             const response = collected?.first();
@@ -137,7 +142,7 @@ client3.on("messageCreate", async (message) => {
                 response?.content.includes(`${client2.user.username}の攻撃！`)
             ) {
                 await timeout(coolTime)
-                response?.channel.send(atkmsg3)
+                response?.channel.send(atkmsgs.client3)
             }
         }
         if (message.content.includes(`${client3.user.username}はやられてしまった。。。`)) {
@@ -151,8 +156,8 @@ client4.on("messageCreate", async (message) => {
         message.guild.id !== guildId
     ) return;
     if (message.content.includes("4.atk")) {
-        atkmsg4 = atkmsg4 === "::atk" ? '::i f' : '::atk'
-        message.channel.send(`change ${atkmsg4}`)
+        atkmsgs.client4 = atkmsgs.client4 === "::atk" ? '::i f' : '::atk'
+        message.channel.send(`change ${atkmsgs.client4}`)
     }
     if (message.content.startsWith("s4")) {
         msg = message.content.slice(2)
@@ -162,17 +167,17 @@ client4.on("messageCreate", async (message) => {
         await Eval(message)
     }
     if (targetChannelID == message.channel.id) {
-        if (atkmsg3 === "::atk") {
+        if (atkmsgs.client3 === "::atk") {
             if (message.content.includes(`${client3.user.username}のHP:`) && !message.content.includes('を倒した！')) {
                 await timeout(coolTime)
-                message.channel.send(atkmsg4)
+                message.channel.send(atkmsgs.client4)
             } else if (message.content.includes(`<@${client3.user.id}>はもうやられている`)) {
                 await timeout(coolTime)
                 message.channel.send("::i e ")
                 await timeout(5000)
-                message.channel.send(atkmsg4)
+                message.channel.send(atkmsgs.client4)
             }
-        } else if (atkmsg3 === "::i f" &&
+        } else if (atkmsgs.client3 === "::i f" &&
             message.author.id === client3.user.id) {
             const collected = await message.channel.awaitMessages({ filter, max: 1, time: 10000 });
             const response = collected?.first();
@@ -180,7 +185,7 @@ client4.on("messageCreate", async (message) => {
                 response?.content.includes(`${client3.user.username}の攻撃！`)
             ) {
                 await timeout(coolTime)
-                response?.channel.send(atkmsg4)
+                response?.channel.send(atkmsgs.client4)
             }
         }
         if (message.content.includes(`${client4.user.username}はやられてしまった。。。`)) {
