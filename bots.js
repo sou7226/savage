@@ -1,9 +1,9 @@
 
 const { Client } = require('discord.js-selfbot-v13');
-const setChannel = require('./src/functions');
 const functions = require('./src/functions');
 
 require('dotenv').config();
+
 const client1 = new Client({ checkUpdate: false });
 const client2 = new Client({ checkUpdate: false });
 const client3 = new Client({ checkUpdate: false });
@@ -15,29 +15,22 @@ client3.once('ready', () => console.log(`${client3.user.username} is ready!`));
 client4.once('ready', () => console.log(`${client4.user.username} is ready!`));
 
 const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-let superRareFlag = 0, time, targetChannelID;
-let atkmsg1 = "::atk", atkmsg2 = "::atk", atkmsg3 = "::atk", atkmsg4 = "::atk";
 const guildId = process.env.GUILD_ID;
-let adminId = new Set(process.env.ADMIN_LIST.split(','));
 const filter = m => m.author.id === "526620171658330112";
 const coolTime = 500;
+const isAtkMessage = (content, user) => (
+    (content.includes(`${user.username}のHP:`) || content.includes(`<@${user.id}>はもうやられている`)) &&
+    !content.includes('を倒した！')
+);
+
+let superRareFlag = 0, time, targetChannelID;
+let atkmsg1 = "::atk", atkmsg2 = "::atk", atkmsg3 = "::atk", atkmsg4 = "::atk";
+let adminId = new Set(process.env.ADMIN_LIST.split(','));
 let sendFlags = {
     client1: 1,
     client2: 1,
     client3: 1,
     client4: 1
-}
-const isAtkMessage = (content, user) => (
-    (content.includes(`${user.username}のHP:`) || content.includes(`<@${user.id}>はもうやられている`)) &&
-    !content.includes('を倒した！')
-);
-function sendFlagReset() {
-    sendFlags = {
-        client1: 1,
-        client2: 1,
-        client3: 1,
-        client4: 1
-    }
 }
 
 client1.on("messageCreate", async (message) => {
@@ -70,8 +63,6 @@ client1.on("messageCreate", async (message) => {
                 await timeout(coolTime)
                 message.channel.send(atkmsg1)
             }
-
-        } else if (embedTitle.includes("戦闘結果")) {
         }
     } else if (targetChannelID == message.channel.id) {
         if (isAtkMessage(message.content, client4.user)) {
@@ -196,7 +187,7 @@ client4.on("messageCreate", async (message) => {
             sendFlags.client4 = 1
         }
         if (message.content.includes('を倒した！')) {
-            sendFlagReset()
+            functions.sendFlagReset()
         }
     }
 });

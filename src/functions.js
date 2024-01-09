@@ -30,8 +30,17 @@ function setChannel(message, targetChannelID) {
     }
     return targetChannelID
 }
+function sendFlagReset() {
+    sendFlags = {
+        client1: 1,
+        client2: 1,
+        client3: 1,
+        client4: 1
+    }
+}
 module.exports = {
     setChannel: setChannel,
     clickButton: clickButton,
-    Eval: Eval
+    Eval: Eval,
+    sendFlagReset: sendFlagReset
 };
