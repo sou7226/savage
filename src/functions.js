@@ -38,6 +38,7 @@ function sendFlagReset() {
         client4: 1
     }
 }
+
 module.exports = {
     setChannel: setChannel,
     clickButton: clickButton,
