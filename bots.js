@@ -1,5 +1,5 @@
-
 const { Client } = require('discord.js-selfbot-v13');
+const functions = require('./src/functions');
 
 require('dotenv').config();
 const client1 = new Client({ checkUpdate: false });
@@ -13,53 +13,19 @@ client3.once('ready', () => console.log(`${client3.user.username} is ready!`));
 client4.once('ready', () => console.log(`${client4.user.username} is ready!`));
 
 const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-let flag = -1, superRareFlag = 0, time, targetChannelID;
-let atkmsg1 = "::atk", atkmsg2 = "::atk", atkmsg3 = "::atk", atkmsg4 = "::atk";
 const guildId = process.env.GUILD_ID;
-let adminId = new Set(process.env.ADMIN_LIST.split(','));
 const filter = m => m.author.id === "526620171658330112";
 const coolTime = 500;
 
-async function clickButton(message) {
-    message.channel.send("::sinka")
-    const collected = await message.channel.awaitMessages({ filter, max: 1, time: 10000 });
-    const msg = collected?.first()
-    await msg.clickButton({ row: 0, col: 0 })
-    setTimeout(async () => await msg.clickButton({ row: 0, col: 0 }), 3000)
-}
-async function Eval(message) {
-    const args = message.content.split(" ").slice(1);
-    try {
-        const evaled = eval(args.join(" "));
-        message.channel.send(`\`\`\`js\n${evaled}\n\`\`\``);
-    } catch (err) {
-        message.channel.send(`\`ERROR\` \`\`\`xl\n${err}\n\`\`\``);
-    }
-}
-function setChannel(message) {
-    if (message.content === "w1start") {
-        flag = 1;
-        if (flag > 0) {
-            targetChannelID = message.channel.id
-            adminId.add(message.author.id)
-            message.channel.send("::atk \n```py\nset\n```")
-        }
-    }
-    if (message.content === "w1end") {
-        flag = -1;
-        if (flag < 0) {
-            targetChannelID = null
-            message.channel.send("```py\nend\n```")
-        }
-    }
-
-}
+let targetChannelID, superRareFlag = 0, time;
+let atkmsg1 = "::atk", atkmsg2 = "::atk", atkmsg3 = "::atk", atkmsg4 = "::atk";
+let adminId = new Set(process.env.ADMIN_LIST.split(','));
 
 client1.on("messageCreate", async (message) => {
     if (!adminId.has(message.author.id) &&
         message.guild.id !== guildId
     ) return;
-    setChannel(message)
+    targetChannelID = functions.setChannel(message, targetChannelID)
     if (message.content.startsWith("s1")) {
         msg = message.content.slice(2)
         message.channel.send(msg)
