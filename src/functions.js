@@ -16,13 +16,13 @@ async function clickButton(message) {
 }
 
 function setChannel(message, targetChannelID) {
-    if (message.content === "w1run") {
+    if (message.content === "wwrun") {
         targetChannelID = message.channel.id;
         if (targetChannelID !== null) {
             message.channel.send("::atk \n```py\nset\n```")
         }
     }
-    if (message.content === "w1end") {
+    if (message.content === "wwend") {
         targetChannelID = null;
         if (targetChannelID === null) {
             message.channel.send("```py\nend\n```")
@@ -30,18 +30,32 @@ function setChannel(message, targetChannelID) {
     }
     return targetChannelID
 }
-function sendFlagReset() {
-    sendFlags = {
-        client1: 1,
-        client2: 1,
-        client3: 1,
-        client4: 1
-    }
+function orderReset() {
+    clientOrder = [1, 2, 3, 4];
+    console.log(clientOrder)
+    return clientOrder
 }
-
+async function moderate(client, message, args) {
+    if (message.content.startsWith(`${prefix}say`)) {
+        const channel = await client.channels.fetch(message.channel.id);
+        channel.send(args[1]);
+    };
+    if (message.content.includes(`${prefix}atk`)) {
+        client.atkmsg = client.atkmsg === "::atk" ? '::i f' : '::atk'
+        message.channel.send(`change ${client.atkmsg}`)
+    };
+}
+function orderManageProcess(clientOrder) {
+    let elementToMove = clientOrder.shift();
+    clientOrder.push(elementToMove);
+    console.log(clientOrder);
+}
 module.exports = {
     setChannel: setChannel,
     clickButton: clickButton,
     Eval: Eval,
-    sendFlagReset: sendFlagReset
+    orderReset: orderReset,
+    setChannel: setChannel,
+    moderate: moderate,
+    orderManageProcess: orderManageProcess
 };
