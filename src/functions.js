@@ -34,11 +34,7 @@ function setChannel(prefixes, message, targetChannelID, ResetSSRFlag) {
     };
     return [targetChannelID, ResetSSRFlag]
 }
-function orderReset() {
-    clientOrder = [1, 2, 3, 4];
-    console.log(clientOrder)
-    return clientOrder
-}
+
 async function moderate(client, message, prefix, atkmsg, ResetSSRFlag) {
     const args = message.content.slice(prefix.length).trim().split(" ").slice(1);
     if (message.content.startsWith(`${prefix}say`)) {
@@ -52,17 +48,11 @@ async function moderate(client, message, prefix, atkmsg, ResetSSRFlag) {
 
     return atkmsg
 }
-function orderManageProcess(clientOrder) {
-    let elementToMove = clientOrder.shift();
-    clientOrder.push(elementToMove);
-    console.log(clientOrder);
-}
+
 module.exports = {
     setChannel: setChannel,
     clickButton: clickButton,
     Eval: Eval,
-    orderReset: orderReset,
     setChannel: setChannel,
     moderate: moderate,
-    orderManageProcess: orderManageProcess
 };
