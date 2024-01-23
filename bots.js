@@ -115,7 +115,7 @@ client4.on("messageCreate", async (message) => {
                 await timeout(coolTime)
                 message.channel.send(atkmsg4)
             } else if (
-                message.content.includes(`${client3.user.username}のHP:`) && message.content.includes(`${client3.user.username}はやられてしまった。。。`) ||
+                message.content.includes(`${client3.user.username}のHP:`) && message.content.includes(`${client3.user.username}はやられてしまった。。。`) && !message.content.includes('を倒した！') ||
                 message.content.includes(`<@${client3.user.id}>はもうやられている！`)
             ) {
                 await timeout(coolTime)
