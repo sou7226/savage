@@ -1,5 +1,5 @@
+
 const { Client } = require('discord.js-selfbot-v13');
-const functions = require('./src/functions');
 
 require('dotenv').config();
 const client1 = new Client({ checkUpdate: false });
@@ -12,20 +12,40 @@ client2.once('ready', () => console.log(`${client2.user.username} is ready!`));
 client3.once('ready', () => console.log(`${client3.user.username} is ready!`));
 client4.once('ready', () => console.log(`${client4.user.username} is ready!`));
 
+
 const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-const guildId = process.env.GUILD_ID;
 const filter = m => m.author.id === "526620171658330112";
 const coolTime = 500;
+const guildId = process.env.GUILD_ID;
 
-let targetChannelID, superRareFlag = 0, time;
-let atkmsg1 = "::atk", atkmsg2 = "::atk", atkmsg3 = "::atk", atkmsg4 = "::atk";
 let adminId = new Set(process.env.ADMIN_LIST.split(','));
+let flag = -1, superRareFlag = 0, time, targetChannelID;
+let atkmsg1 = "::atk", atkmsg2 = "::atk", atkmsg3 = "::atk", atkmsg4 = "::atk";
+
+function setChannel(message) {
+    if (message.content === "w1start") {
+        flag = 1;
+        if (flag > 0) {
+            targetChannelID = message.channel.id
+            adminId.add(message.author.id)
+            message.channel.send("::atk \n```py\nset\n```")
+        }
+    }
+    if (message.content === "w1end") {
+        flag = -1;
+        if (flag < 0) {
+            targetChannelID = null
+            message.channel.send("```py\nend\n```")
+        }
+    }
+
+}
 
 client1.on("messageCreate", async (message) => {
     if (!adminId.has(message.author.id) &&
         message.guild.id !== guildId
     ) return;
-    targetChannelID = functions.setChannel(message, targetChannelID)
+    setChannel(message)
     if (message.content.startsWith("s1")) {
         msg = message.content.slice(2)
         message.channel.send(msg)
@@ -84,7 +104,6 @@ client2.on("messageCreate", async (message) => {
         clearTimeout(time);
         if (superRareFlag === 1) {
             superRareFlag = 0
-            message.channel.send("::re ")
         } else if (
             (message.content.includes(`${client1.user.username}のHP:`) || message.content.includes(`<@${client1.user.id}>はもうやられている`)) &&
             !message.content.includes('を倒した！')

@@ -37,13 +37,15 @@ function orderReset() {
 }
 async function moderate(client, message, args) {
     if (message.content.startsWith(`${prefix}say`)) {
+        const args = message.content.slice(prefix.length).trim().split(" ").slice(1);
         const channel = await client.channels.fetch(message.channel.id);
         channel.send(args[1]);
     };
-    if (message.content.includes(`${prefix}atk`)) {
+    if (message.content.includes(`wwatk`)) {
         client.atkmsg = client.atkmsg === "::atk" ? '::i f' : '::atk'
         message.channel.send(`change ${client.atkmsg}`)
     };
+    return client.atkmsg
 }
 function orderManageProcess(clientOrder) {
     let elementToMove = clientOrder.shift();
