@@ -35,7 +35,7 @@ function orderReset() {
     console.log(clientOrder)
     return clientOrder
 }
-async function moderate(client, message, prefix, atkmsg) {
+async function moderate(client, message, prefix, atkmsg, ResetSSRFlag) {
     const args = message.content.slice(prefix.length).trim().split(" ").slice(1);
     if (message.content.startsWith(`${prefix}say`)) {
         const channel = await client.channels.fetch(message.channel.id);
@@ -45,7 +45,11 @@ async function moderate(client, message, prefix, atkmsg) {
         atkmsg = atkmsg === "::atk" ? '::i f' : '::atk'
         message.channel.send(`change ${atkmsg}`)
     };
-    return atkmsg
+    if (message.content.includes(`${prefix}reset`)) {
+        ResetSSRFlag = ResetSSRFlag === true ? false : true
+        message.channel.send(`change ${ResetSSRFlag}`)
+    };
+    return atkmsg, ResetSSRFlag
 }
 function orderManageProcess(clientOrder) {
     let elementToMove = clientOrder.shift();

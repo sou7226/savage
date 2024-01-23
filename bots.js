@@ -11,21 +11,21 @@ const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const filter = m => m.author.id === "526620171658330112";
 const coolTime = 500;
 const guildId = process.env.GUILD_ID;
-const prefixes = "w1", prefix1 = "s1", prefix2 = "s2", prefix3 = "s3", prefix4 = "s4"
+const prefixes = process.env.prefixes, prefix1 = process.env.prefix1, prefix2 = process.env.prefix2, prefix3 = process.env.prefix3, prefix4 = process.env.prefix4
 client1.once('ready', () => console.log(`prefixes is ${prefixes}\n${client1.user.username} is ${prefix1}`));
 client2.once('ready', () => console.log(`${client2.user.username} is ${prefix2}`));
 client3.once('ready', () => console.log(`${client3.user.username} is ${prefix3}`));
 client4.once('ready', () => console.log(`${client4.user.username} is ${prefix4}`));
 
 let adminId = new Set(process.env.ADMIN_LIST.split(','));
-let superRareFlag = 0, time, targetChannelID;
+let SSRFlag = false, ResetSSRFlag = false, time, targetChannelID;
 let atkmsg1 = "::atk", atkmsg2 = "::atk", atkmsg3 = "::atk", atkmsg4 = "::atk";
 
 client1.on("messageCreate", async (message) => {
     if (!adminId.has(message.author.id) && message.guild.id !== guildId) return;
     targetChannelID = functions.setChannel(prefixes, message, targetChannelID)
     if (message.content.startsWith(prefix1)) {
-        atkmsg1 = await functions.moderate(client1, message, prefix1, atkmsg1)
+        atkmsg1, ResetSSRFlag = await functions.moderate(client1, message, prefix1, atkmsg1, ResetSSRFlag)
     }
     if (
         // 監視対象のチャンネルで、かつEmbedが存在するメッセージの場合
@@ -36,7 +36,7 @@ client1.on("messageCreate", async (message) => {
         const embedTitle = message.embeds[0].title;
         if (embedTitle.includes("が待ち構えている")) {
             if (message.embeds[0].author.name.includes("超激レア")) {
-                superRareFlag = 1
+                SSRFlag = true
             } else {
                 await timeout(coolTime)
                 message.channel.send(atkmsg1)
@@ -64,16 +64,15 @@ client2.on("messageCreate", async (message) => {
     }
     if (targetChannelID == message.channel.id) {
         clearTimeout(time);
-        if (superRareFlag === 1) {
-            superRareFlag = 0
-        } else if (
+        if (
             (message.content.includes(`${client1.user.username}のHP:`) || message.content.includes(`<@${client1.user.id}>はもうやられている`)) &&
             !message.content.includes('を倒した！')
         ) {
             await timeout(coolTime)
-            message.channel.send(atkmsg2)
+            message.channel.send(ResetSSRFlag && SSRFlag ? "re" : atkmsg2)
         }
-        time = setTimeout(() => message.channel?.send(atkmsg2), 8000)
+        time = setTimeout(() => message.channel?.send(ResetSSRFlag && SSRFlag ? "re" : atkmsg2), 8000)
+        SSRFlag = false
     }
 });
 
