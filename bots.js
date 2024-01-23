@@ -59,15 +59,8 @@ client1.on("messageCreate", async (message) => {
 
 client2.on("messageCreate", async (message) => {
     if (!adminId.has(message.author.id) && message.guild.id !== guildId) return;
-
     if (message.content.startsWith(prefix2)) {
-        await functions.moderate(client2, message, prefix2)
-    }
-    if (message.content.includes("2.atk")) {
-        atkmsg2 = atkmsg2 === "::atk" ? '::i f' : '::atk'
-    }
-    if (message.content.startsWith("2.eval")) {
-        await Eval(message)
+        atkmsg2 = await functions.moderate(client2, message, prefix2, atkmsg2)
     }
     if (targetChannelID == message.channel.id) {
         clearTimeout(time);
@@ -86,15 +79,8 @@ client2.on("messageCreate", async (message) => {
 
 client3.on("messageCreate", async (message) => {
     if (!adminId.has(message.author.id) && message.guild.id !== guildId) return;
-
     if (message.content.startsWith(prefix3)) {
-        await functions.moderate(client3, message, prefix3)
-    }
-    if (message.content.includes("3.atk")) {
-        atkmsg3 = atkmsg3 === "::atk" ? '::i f' : '::atk'
-    }
-    if (message.content.startsWith("3.eval")) {
-        await Eval(message)
+        atkmsg3 = await functions.moderate(client3, message, prefix3, atkmsg3)
     }
     if (targetChannelID == message.channel.id) {
         if (atkmsg2 === "::atk") {
@@ -121,16 +107,8 @@ client3.on("messageCreate", async (message) => {
 
 client4.on("messageCreate", async (message) => {
     if (!adminId.has(message.author.id) && message.guild.id !== guildId) return;
-
     if (message.content.startsWith(prefix4)) {
-        await functions.moderate(client4, message, prefix4)
-    }
-    if (message.content.includes("4.atk")) {
-        atkmsg4 = atkmsg4 === "::atk" ? '::i f' : '::atk'
-        message.channel.send("change")
-    }
-    if (message.content.startsWith("4.eval")) {
-        await Eval(message)
+        atkmsg4 = await functions.moderate(client4, message, prefix4, atkmsg4)
     }
     if (targetChannelID == message.channel.id) {
         if (atkmsg3 === "::atk") {
