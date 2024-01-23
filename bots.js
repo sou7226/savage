@@ -12,10 +12,10 @@ const filter = m => m.author.id === "526620171658330112";
 const coolTime = 500;
 const guildId = process.env.GUILD_ID;
 const prefixes = "w1", prefix1 = "s1", prefix2 = "s2", prefix3 = "s3", prefix4 = "s4"
-client1.once('ready', () => console.log(`${client1.user.username} is ready!`));
-client2.once('ready', () => console.log(`${client2.user.username} is ready!`));
-client3.once('ready', () => console.log(`${client3.user.username} is ready!`));
-client4.once('ready', () => console.log(`${client4.user.username} is ready!`));
+client1.once('ready', () => console.log(`prefixes is ${prefixes}\n${client1.user.username} is ${prefix1}`));
+client2.once('ready', () => console.log(`${client2.user.username} is ${prefix2}`));
+client3.once('ready', () => console.log(`${client3.user.username} is ${prefix3}`));
+client4.once('ready', () => console.log(`${client4.user.username} is ${prefix4}`));
 
 let adminId = new Set(process.env.ADMIN_LIST.split(','));
 let superRareFlag = 0, time, targetChannelID;
