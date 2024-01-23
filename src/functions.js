@@ -15,7 +15,7 @@ async function clickButton(message) {
     setTimeout(async () => await msg.clickButton({ row: 0, col: 0 }), 3000)
 }
 
-function setChannel(prefixes, message, targetChannelID) {
+function setChannel(prefixes, message, targetChannelID, ResetSSRFlag) {
     if (message.content === `${prefixes}run`) {
         targetChannelID = message.channel.id;
         if (targetChannelID !== null) {
@@ -28,7 +28,11 @@ function setChannel(prefixes, message, targetChannelID) {
             message.channel.send("```py\nend\n```")
         }
     }
-    return targetChannelID
+    if (message.content.includes(`${prefixes}reset`)) {
+        ResetSSRFlag = ResetSSRFlag === true ? false : true
+        message.channel.send(`change ${ResetSSRFlag}`)
+    };
+    return [targetChannelID, ResetSSRFlag]
 }
 function orderReset() {
     clientOrder = [1, 2, 3, 4];
@@ -45,11 +49,8 @@ async function moderate(client, message, prefix, atkmsg, ResetSSRFlag) {
         atkmsg = atkmsg === "::atk" ? '::i f' : '::atk'
         message.channel.send(`change ${atkmsg}`)
     };
-    if (message.content.includes(`${prefix}reset`)) {
-        ResetSSRFlag = ResetSSRFlag === true ? false : true
-        message.channel.send(`change ${ResetSSRFlag}`)
-    };
-    return atkmsg, ResetSSRFlag
+
+    return atkmsg
 }
 function orderManageProcess(clientOrder) {
     let elementToMove = clientOrder.shift();

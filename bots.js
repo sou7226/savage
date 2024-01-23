@@ -23,9 +23,9 @@ let atkmsg1 = "::atk", atkmsg2 = "::atk", atkmsg3 = "::atk", atkmsg4 = "::atk";
 
 client1.on("messageCreate", async (message) => {
     if (!adminId.has(message.author.id) && message.guild.id !== guildId) return;
-    targetChannelID = functions.setChannel(prefixes, message, targetChannelID)
+    [targetChannelID, ResetSSRFlag] = functions.setChannel(prefixes, message, targetChannelID, ResetSSRFlag)
     if (message.content.startsWith(prefix1)) {
-        atkmsg1, ResetSSRFlag = await functions.moderate(client1, message, prefix1, atkmsg1, ResetSSRFlag)
+        atkmsg1 = await functions.moderate(client1, message, prefix1, atkmsg1)
     }
     if (
         // 監視対象のチャンネルで、かつEmbedが存在するメッセージの場合
@@ -111,11 +111,11 @@ client4.on("messageCreate", async (message) => {
     }
     if (targetChannelID == message.channel.id) {
         if (atkmsg3 === "::atk") {
-            if (message.content.includes(`${client3.user.username}のHP:`) && !message.content.includes('を倒した！')) {
+            if (message.content.includes(`${client3.user.username}のHP:`) && !message.content.includes(`${client3.user.username}はやられてしまった。。。`) && !message.content.includes('を倒した！')) {
                 await timeout(coolTime)
                 message.channel.send(atkmsg4)
             } else if (
-                message.content.includes(`${client3.user.username}はやられてしまった。。。`) ||
+                message.content.includes(`${client3.user.username}のHP:`) && message.content.includes(`${client3.user.username}はやられてしまった。。。`) ||
                 message.content.includes(`<@${client3.user.id}>はもうやられている！`)
             ) {
                 await timeout(coolTime)
