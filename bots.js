@@ -19,7 +19,7 @@ client3.once('ready', () => console.log(`${client3.user.username} is ${prefix3}`
 client4.once('ready', () => console.log(`${client4.user.username} is ${prefix4}`));
 
 let adminId = new Set(process.env.ADMIN_LIST.split(','));
-let SSRFlag = false, ResetSSRFlag = false, time, targetChannelID;
+let SSRFlag = false, ResetSSRFlag = true, atkcounter = 0, time, targetChannelID;
 let atkmsg1 = "::atk", atkmsg2 = "::atk", atkmsg3 = "::atk", atkmsg4 = "::atk";
 
 client1.on("messageCreate", async (message) => {
@@ -36,6 +36,7 @@ client1.on("messageCreate", async (message) => {
     ) {
         const embedTitle = message.embeds[0].title;
         if (embedTitle.includes("が待ち構えている")) {
+            SSRFlag = false
             if (message.embeds[0].author.name.includes("超激レア")) {
                 message.channel.send(`<@&${process.env.ROLE_ID}>`)
                 SSRFlag = true
@@ -43,6 +44,7 @@ client1.on("messageCreate", async (message) => {
             await timeout(coolTime)
             message.channel.send(atkmsg1)
         } else if (embedTitle.includes("戦闘結果")) {
+            atkcounter = 0;
         }
     } else if (targetChannelID == message.channel.id) {
         if (
@@ -69,10 +71,10 @@ client2.on("messageCreate", async (message) => {
             !message.content.includes('を倒した！')
         ) {
             await timeout(coolTime)
-            message.channel.send(atkmsg2)
+            message.channel.send(ResetSSRFlag && SSRFlag && atkcounter > 0 ? "::re" : atkmsg2)
+            atkcounter++;
         }
-        time = setTimeout(() => message.channel?.send(ResetSSRFlag && SSRFlag ? "::re" : atkmsg2), 8000)
-        SSRFlag = false
+        time = setTimeout(() => message.channel?.send(ResetSSRFlag && SSRFlag && atkcounter > 0 ? "::re" : atkmsg2), 8000)
     }
 });
 
