@@ -15,14 +15,14 @@ async function clickButton(message) {
     setTimeout(async () => await msg.clickButton({ row: 0, col: 0 }), 3000)
 }
 
-function setChannel(message, targetChannelID) {
-    if (message.content === "wwrun") {
+function setChannel(prefixes, message, targetChannelID) {
+    if (message.content === `${prefixes}run`) {
         targetChannelID = message.channel.id;
         if (targetChannelID !== null) {
             message.channel.send("::atk \n```py\nset\n```")
         }
     }
-    if (message.content === "wwend") {
+    if (message.content === `${prefixes}end`) {
         targetChannelID = null;
         if (targetChannelID === null) {
             message.channel.send("```py\nend\n```")
@@ -35,17 +35,17 @@ function orderReset() {
     console.log(clientOrder)
     return clientOrder
 }
-async function moderate(client, message, args) {
+async function moderate(client, message, prefix, atkmsg) {
+    const args = message.content.slice(prefix.length).trim().split(" ").slice(1);
     if (message.content.startsWith(`${prefix}say`)) {
-        const args = message.content.slice(prefix.length).trim().split(" ").slice(1);
         const channel = await client.channels.fetch(message.channel.id);
-        channel.send(args[1]);
+        channel.send(args[0]);
     };
-    if (message.content.includes(`wwatk`)) {
-        client.atkmsg = client.atkmsg === "::atk" ? '::i f' : '::atk'
-        message.channel.send(`change ${client.atkmsg}`)
+    if (message.content.includes(`${prefix}atk`)) {
+        atkmsg = atkmsg === "::atk" ? '::i f' : '::atk'
+        message.channel.send(`change ${atkmsg}`)
     };
-    return client.atkmsg
+    return atkmsg
 }
 function orderManageProcess(clientOrder) {
     let elementToMove = clientOrder.shift();

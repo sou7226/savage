@@ -1,60 +1,31 @@
 
-const { Client } = require('discord.js-selfbot-v13');
-
 require('dotenv').config();
+
+const { Client } = require('discord.js-selfbot-v13');
 const client1 = new Client({ checkUpdate: false });
 const client2 = new Client({ checkUpdate: false });
 const client3 = new Client({ checkUpdate: false });
 const client4 = new Client({ checkUpdate: false });
-
+const functions = require('./src/functions');
+const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const filter = m => m.author.id === "526620171658330112";
+const coolTime = 500;
+const guildId = process.env.GUILD_ID;
+const prefixes = "w1", prefix1 = "s1", prefix2 = "s2", prefix3 = "s3", prefix4 = "s4"
 client1.once('ready', () => console.log(`${client1.user.username} is ready!`));
 client2.once('ready', () => console.log(`${client2.user.username} is ready!`));
 client3.once('ready', () => console.log(`${client3.user.username} is ready!`));
 client4.once('ready', () => console.log(`${client4.user.username} is ready!`));
 
-
-const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-const filter = m => m.author.id === "526620171658330112";
-const coolTime = 500;
-const guildId = process.env.GUILD_ID;
-
 let adminId = new Set(process.env.ADMIN_LIST.split(','));
-let flag = -1, superRareFlag = 0, time, targetChannelID;
+let superRareFlag = 0, time, targetChannelID;
 let atkmsg1 = "::atk", atkmsg2 = "::atk", atkmsg3 = "::atk", atkmsg4 = "::atk";
 
-function setChannel(message) {
-    if (message.content === "w1start") {
-        flag = 1;
-        if (flag > 0) {
-            targetChannelID = message.channel.id
-            adminId.add(message.author.id)
-            message.channel.send("::atk \n```py\nset\n```")
-        }
-    }
-    if (message.content === "w1end") {
-        flag = -1;
-        if (flag < 0) {
-            targetChannelID = null
-            message.channel.send("```py\nend\n```")
-        }
-    }
-
-}
-
 client1.on("messageCreate", async (message) => {
-    if (!adminId.has(message.author.id) &&
-        message.guild.id !== guildId
-    ) return;
-    setChannel(message)
-    if (message.content.startsWith("s1")) {
-        msg = message.content.slice(2)
-        message.channel.send(msg)
-    }
-    if (message.content.includes("1.atk")) {
-        atkmsg1 = atkmsg1 === "::atk" ? '::i f' : '::atk'
-    }
-    if (message.content.startsWith("1.eval")) {
-        await Eval(message)
+    if (!adminId.has(message.author.id) && message.guild.id !== guildId) return;
+    targetChannelID = functions.setChannel(prefixes, message, targetChannelID)
+    if (message.content.startsWith(prefix1)) {
+        atkmsg1 = await functions.moderate(client1, message, prefix1, atkmsg1)
     }
     if (
         // 監視対象のチャンネルで、かつEmbedが存在するメッセージの場合
@@ -87,12 +58,10 @@ client1.on("messageCreate", async (message) => {
 });
 
 client2.on("messageCreate", async (message) => {
-    if (!adminId.has(message.author.id) &&
-        message.guild.id !== guildId
-    ) return;
-    if (message.content.startsWith("s2")) {
-        msg = message.content.slice(2)
-        message.channel.send(msg)
+    if (!adminId.has(message.author.id) && message.guild.id !== guildId) return;
+
+    if (message.content.startsWith(prefix2)) {
+        await functions.moderate(client2, message, prefix2)
     }
     if (message.content.includes("2.atk")) {
         atkmsg2 = atkmsg2 === "::atk" ? '::i f' : '::atk'
@@ -116,13 +85,10 @@ client2.on("messageCreate", async (message) => {
 });
 
 client3.on("messageCreate", async (message) => {
-    if (!adminId.has(message.author.id) &&
-        message.guild.id !== guildId
-    ) return;
-    if (message.content.startsWith("s3")) {
-        msg = message.content.slice(2)
-        await timeout(coolTime)
-        message.channel.send(msg)
+    if (!adminId.has(message.author.id) && message.guild.id !== guildId) return;
+
+    if (message.content.startsWith(prefix3)) {
+        await functions.moderate(client3, message, prefix3)
     }
     if (message.content.includes("3.atk")) {
         atkmsg3 = atkmsg3 === "::atk" ? '::i f' : '::atk'
@@ -154,16 +120,14 @@ client3.on("messageCreate", async (message) => {
 });
 
 client4.on("messageCreate", async (message) => {
-    if (!adminId.has(message.author.id) &&
-        message.guild.id !== guildId
-    ) return;
+    if (!adminId.has(message.author.id) && message.guild.id !== guildId) return;
+
+    if (message.content.startsWith(prefix4)) {
+        await functions.moderate(client4, message, prefix4)
+    }
     if (message.content.includes("4.atk")) {
         atkmsg4 = atkmsg4 === "::atk" ? '::i f' : '::atk'
         message.channel.send("change")
-    }
-    if (message.content.startsWith("s4")) {
-        msg = message.content.slice(2)
-        message.channel.send(msg)
     }
     if (message.content.startsWith("4.eval")) {
         await Eval(message)
