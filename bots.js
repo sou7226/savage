@@ -42,7 +42,6 @@ client1.on("messageCreate", async (message) => {
             }
             await timeout(coolTime)
             message.channel.send(atkmsg1)
-
         } else if (embedTitle.includes("戦闘結果")) {
         }
     } else if (targetChannelID == message.channel.id) {
@@ -70,11 +69,10 @@ client2.on("messageCreate", async (message) => {
             !message.content.includes('を倒した！')
         ) {
             await timeout(coolTime)
-            message.channel.send(ResetSSRFlag && SSRFlag ? "::re" : atkmsg2)
-        } else if (message.content.includes('を倒した！')) {
-            SSRFlag = false
+            message.channel.send(atkmsg2)
         }
         time = setTimeout(() => message.channel?.send(ResetSSRFlag && SSRFlag ? "::re" : atkmsg2), 8000)
+        SSRFlag = false
     }
 });
 
@@ -83,7 +81,7 @@ client3.on("messageCreate", async (message) => {
     if (message.content.startsWith(prefix3)) {
         atkmsg3 = await functions.moderate(client3, message, prefix3, atkmsg3)
     }
-    if (targetChannelID == message.channel.id) {
+    if (targetChannelID == message.channel.id && !SSRFlag) {
         if (atkmsg2 === "::atk") {
             if (
                 (message.content.includes(`${client2.user.username}のHP:`) || message.content.includes(`<@${client2.user.id}>はもうやられている`)) &&
