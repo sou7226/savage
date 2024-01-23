@@ -29,13 +29,13 @@ function setChannel(prefixes, message, targetChannelID, ResetSSRFlag) {
         }
     }
     if (message.content.includes(`${prefixes}reset`)) {
-        ResetSSRFlag = ResetSSRFlag === true ? false : true
+        ResetSSRFlag = ResetSSRFlag ? false : true
         message.channel.send(`change ${ResetSSRFlag}`)
     };
     return [targetChannelID, ResetSSRFlag]
 }
 
-async function moderate(client, message, prefix, atkmsg, ResetSSRFlag) {
+async function moderate(client, message, prefix, atkmsg) {
     const args = message.content.slice(prefix.length).trim().split(" ").slice(1);
     if (message.content.startsWith(`${prefix}say`)) {
         const channel = await client.channels.fetch(message.channel.id);

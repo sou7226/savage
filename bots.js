@@ -37,6 +37,7 @@ client1.on("messageCreate", async (message) => {
         const embedTitle = message.embeds[0].title;
         if (embedTitle.includes("が待ち構えている")) {
             if (message.embeds[0].author.name.includes("超激レア")) {
+                message.channel.send(`<@&${process.env.ROLE_ID}>`)
                 SSRFlag = true
             }
             await timeout(coolTime)
@@ -70,9 +71,10 @@ client2.on("messageCreate", async (message) => {
         ) {
             await timeout(coolTime)
             message.channel.send(ResetSSRFlag && SSRFlag ? "::re" : atkmsg2)
+        } else if (message.content.includes('を倒した！')) {
+            SSRFlag = false
         }
         time = setTimeout(() => message.channel?.send(ResetSSRFlag && SSRFlag ? "::re" : atkmsg2), 8000)
-        SSRFlag = false
     }
 });
 
