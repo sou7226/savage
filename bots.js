@@ -83,7 +83,7 @@ client3.on("messageCreate", async (message) => {
     if (message.content.startsWith(prefix3)) {
         atkmsg3 = await functions.moderate(client3, message, prefix3, atkmsg3)
     }
-    if (targetChannelID == message.channel.id && !SSRFlag) {
+    if (targetChannelID == message.channel.id && !SSRFlag || !ResetSSRFlag) {
         if (atkmsg2 === "::atk") {
             if (
                 (message.content.includes(`${client2.user.username}のHP:`) || message.content.includes(`<@${client2.user.id}>はもうやられている`)) &&
