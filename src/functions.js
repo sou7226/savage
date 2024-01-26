@@ -15,11 +15,11 @@ async function clickButton(message) {
     setTimeout(async () => await msg.clickButton({ row: 0, col: 0 }), 3000)
 }
 
-function setChannel(prefixes, message, targetChannelID, ResetSSRFlag) {
+function setChannel(prefixes, message, targetChannelID, ResetSSRFlag, atkmsg) {
     if (message.content === `${prefixes}run`) {
         targetChannelID = message.channel.id;
         if (targetChannelID !== null) {
-            message.channel.send("::atk \n```py\nset\n```")
+            message.channel.send(`${atkmsg}`)
         }
     }
     if (message.content === `${prefixes}end`) {
@@ -36,10 +36,9 @@ function setChannel(prefixes, message, targetChannelID, ResetSSRFlag) {
 }
 
 async function moderate(client, message, prefix, atkmsg) {
-    const args = message.content.slice(prefix.length).trim().split(" ").slice(1);
     if (message.content.startsWith(`${prefix}say`)) {
         const channel = await client.channels.fetch(message.channel.id);
-        channel.send(args[0]);
+        channel.send(message.content.slice(prefix.length + 3));
     };
     if (message.content.includes(`${prefix}atk`)) {
         atkmsg = atkmsg === "::atk" ? '::i f' : '::atk'

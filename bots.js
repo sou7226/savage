@@ -9,7 +9,7 @@ const client4 = new Client({ checkUpdate: false });
 const functions = require('./src/functions');
 const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const filter = m => m.author.id === "526620171658330112";
-const coolTime = 500;
+const coolTime = 500, usedElixirCoolTime = 2000, Timeout = 8000;
 const guildId = process.env.GUILD_ID;
 const prefixes = process.env.prefixes, prefix1 = process.env.prefix1, prefix2 = process.env.prefix2, prefix3 = process.env.prefix3, prefix4 = process.env.prefix4
 
@@ -24,7 +24,7 @@ let atkmsg1 = "::atk", atkmsg2 = "::atk", atkmsg3 = "::atk", atkmsg4 = "::atk";
 
 client1.on("messageCreate", async (message) => {
     if (!adminId.has(message.author.id) && message.guild.id !== guildId) return;
-    [targetChannelID, ResetSSRFlag] = functions.setChannel(prefixes, message, targetChannelID, ResetSSRFlag)
+    [targetChannelID, ResetSSRFlag] = functions.setChannel(prefixes, message, targetChannelID, ResetSSRFlag, atkmsg1)
     if (message.content.startsWith(prefix1)) {
         atkmsg1 = await functions.moderate(client1, message, prefix1, atkmsg1)
     }
@@ -66,15 +66,25 @@ client2.on("messageCreate", async (message) => {
     }
     if (targetChannelID == message.channel.id) {
         clearTimeout(time);
-        if (
-            (message.content.includes(`${client1.user.username}のHP:`) || message.content.includes(`<@${client1.user.id}>はもうやられている`)) &&
-            !message.content.includes('を倒した！')
-        ) {
-            await timeout(coolTime)
-            message.channel.send(ResetSSRFlag && SSRFlag && atkcounter > 0 ? "::re" : atkmsg2)
-            atkcounter++;
+        if (atkmsg1 === "::atk") {
+            if (
+                (message.content.includes(`${client1.user.username}のHP:`) || message.content.includes(`<@${client1.user.id}>はもうやられている`)) &&
+                !message.content.includes('を倒した！')
+            ) {
+                await timeout(coolTime)
+                message.channel.send(ResetSSRFlag && SSRFlag && atkcounter > 0 ? "::re" : atkmsg2)
+                atkcounter++;
+            }
         }
-        time = setTimeout(() => message.channel?.send(ResetSSRFlag && SSRFlag && atkcounter > 0 ? "::re" : atkmsg2), 8000)
+        if (atkmsg1 === "::i f") {
+            if (!message?.content.includes('を倒した！') &&
+                message?.content.includes(`${client1.user.username}の攻撃！`)
+            ) {
+                await timeout(coolTime)
+                message?.channel.send(atkmsg2)
+            }
+        }
+        time = setTimeout(() => message.channel?.send(ResetSSRFlag && SSRFlag && atkcounter > 0 ? "::re" : atkmsg2 + " to"), Timeout)
     }
 });
 
@@ -92,15 +102,12 @@ client3.on("messageCreate", async (message) => {
                 await timeout(coolTime)
                 message.channel.send(atkmsg3)
             }
-        } else if (atkmsg2 === "::i f" &&
-            message.author.id === client2.user.id) {
-            const collected = await message.channel.awaitMessages({ filter, max: 1, time: 10000 });
-            const response = collected?.first();
-            if (!response?.content.includes('を倒した！') &&
-                response?.content.includes(`${client2.user.username}の攻撃！`)
+        } else if (atkmsg2 === "::i f") {
+            if (!message?.content.includes('を倒した！') &&
+                message?.content.includes(`${client2.user.username}の攻撃！`)
             ) {
                 await timeout(coolTime)
-                response?.channel.send(atkmsg3)
+                message?.channel.send(atkmsg3)
             }
         }
     }
@@ -122,18 +129,15 @@ client4.on("messageCreate", async (message) => {
             ) {
                 await timeout(coolTime)
                 message.channel.send("::i e ")
-                await timeout(5000)
+                await timeout(usedElixirCoolTime)
                 message.channel.send(atkmsg4)
             }
-        } else if (atkmsg3 === "::i f" &&
-            message.author.id === client3.user.id) {
-            const collected = await message.channel.awaitMessages({ filter, max: 1, time: 10000 });
-            const response = collected?.first();
-            if (!response?.content.includes('を倒した！') &&
-                response?.content.includes(`${client3.user.username}の攻撃！`)
+        } else if (atkmsg3 === "::i f") {
+            if (!message?.content.includes('を倒した！') &&
+                message?.content.includes(`${client3.user.username}の攻撃！`)
             ) {
                 await timeout(coolTime)
-                response?.channel.send(atkmsg4)
+                message?.channel.send(atkmsg4)
             }
         }
     }
