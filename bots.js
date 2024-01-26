@@ -8,8 +8,7 @@ const client3 = new Client({ checkUpdate: false });
 const client4 = new Client({ checkUpdate: false });
 const functions = require('./src/functions');
 const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-const filter = m => m.author.id === "526620171658330112";
-const coolTime = 500, usedElixirCoolTime = 2000, Timeout = 8000;
+const coolTime = parseInt(process.env.coolTime), usedElixirCoolTime = parseInt(process.env.usedElixirCoolTime), Timeout = parseInt(process.env.Timeout);
 const guildId = process.env.GUILD_ID;
 const prefixes = process.env.prefixes, prefix1 = process.env.prefix1, prefix2 = process.env.prefix2, prefix3 = process.env.prefix3, prefix4 = process.env.prefix4
 
