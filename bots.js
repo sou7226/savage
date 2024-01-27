@@ -80,7 +80,8 @@ client2.on("messageCreate", async (message) => {
                 message?.content.includes(`${client1.user.username}の攻撃！`)
             ) {
                 await timeout(coolTime)
-                message?.channel.send(atkmsg2)
+                message?.channel.send(ResetSSRFlag && SSRFlag && atkcounter > 0 ? "::re" : atkmsg2)
+                atkcounter++;
             }
         }
         time = setTimeout(() => message.channel?.send(ResetSSRFlag && SSRFlag && atkcounter > 0 ? "::re" : atkmsg2 + " to"), Timeout)
