@@ -46,12 +46,22 @@ client1.on("messageCreate", async (message) => {
             atkcounter = 0;
         }
     } else if (targetChannelID == message.channel.id) {
-        if (
-            (message.content.includes(`${client4.user.username}のHP:`) || message.content.includes(`<@${client4.user.id}>はもうやられている`)) &&
-            !message.content.includes('を倒した！')
-        ) {
-            await timeout(coolTime)
-            message.channel.send(atkmsg1)
+        if (atkmsg4 === "::atk") {
+            if (
+                (message.content.includes(`${client4.user.username}のHP:`) || message.content.includes(`<@${client4.user.id}>はもうやられている`)) &&
+                !message.content.includes('を倒した！')
+            ) {
+                await timeout(coolTime)
+                message.channel.send(atkmsg1)
+            }
+        } else if (atkmsg4 === "::i f") {
+            if (!message?.content.includes('を倒した！') &&
+                message?.content.includes(`${client4.user.username}の攻撃！`) ||
+                message?.content.includes("倒すなら拳で語り合ってください。")
+            ) {
+                await timeout(coolTime)
+                message?.channel.send(atkmsg1)
+            }
         }
 
 
@@ -74,10 +84,10 @@ client2.on("messageCreate", async (message) => {
                 message.channel.send(ResetSSRFlag && SSRFlag && atkcounter > 0 ? "::re" : atkmsg2)
                 atkcounter++;
             }
-        }
-        if (atkmsg1 === "::i f") {
+        } else if (atkmsg1 === "::i f") {
             if (!message?.content.includes('を倒した！') &&
-                message?.content.includes(`${client1.user.username}の攻撃！`)
+                message?.content.includes(`${client1.user.username}の攻撃！`) ||
+                message?.content.includes("倒すなら拳で語り合ってください。")
             ) {
                 await timeout(coolTime)
                 message?.channel.send(ResetSSRFlag && SSRFlag && atkcounter > 0 ? "::re" : atkmsg2)
@@ -104,7 +114,8 @@ client3.on("messageCreate", async (message) => {
             }
         } else if (atkmsg2 === "::i f") {
             if (!message?.content.includes('を倒した！') &&
-                message?.content.includes(`${client2.user.username}の攻撃！`)
+                message?.content.includes(`${client2.user.username}の攻撃！`) ||
+                message?.content.includes("倒すなら拳で語り合ってください。")
             ) {
                 await timeout(coolTime)
                 message?.channel.send(atkmsg3)
@@ -125,6 +136,7 @@ client4.on("messageCreate", async (message) => {
                 message.channel.send(atkmsg4)
             } else if (
                 message.content.includes(`${client3.user.username}のHP:`) && message.content.includes(`${client3.user.username}はやられてしまった。。。`) && !message.content.includes('を倒した！') ||
+                message.content.includes(`${client3.user.username}のHP:`) && message.content.includes(`${client3.user.username}は自滅してしまった。。。`) && !message.content.includes('を倒した！') ||
                 message.content.includes(`<@${client3.user.id}>はもうやられている！`)
             ) {
                 await timeout(coolTime)
@@ -134,7 +146,8 @@ client4.on("messageCreate", async (message) => {
             }
         } else if (atkmsg3 === "::i f") {
             if (!message?.content.includes('を倒した！') &&
-                message?.content.includes(`${client3.user.username}の攻撃！`)
+                message?.content.includes(`${client3.user.username}の攻撃！`) ||
+                message?.content.includes("倒すなら拳で語り合ってください。")
             ) {
                 await timeout(coolTime)
                 message?.channel.send(atkmsg4)
