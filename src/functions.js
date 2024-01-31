@@ -7,15 +7,15 @@ async function Eval(message) {
         message.channel.send(`\`ERROR\` \`\`\`xl\n${err}\n\`\`\``);
     }
 }
-async function clickButton(message) {
-    message.channel.send("::sinka")
-    const collected = await message.channel.awaitMessages({ filter, max: 1, time: 10000 });
-    const msg = collected?.first()
-    await msg.clickButton({ row: 0, col: 0 })
-    setTimeout(async () => await msg.clickButton({ row: 0, col: 0 }), 3000)
+async function clickButton(message, pos1, pos2) {
+    try {
+        await message.clickButton({ row: pos1, col: pos2 })
+    } catch (err) {
+        console.error(err);
+    }
 }
 
-function setChannel(prefixes, message, targetChannelID, ResetSSRFlag, atkmsg) {
+async function setChannel(prefixes, message, targetChannelID, ResetSSRFlag, atkmsg, duoFlag) {
     if (message.content === `${prefixes}run`) {
         targetChannelID = message.channel.id;
         if (targetChannelID !== null) {
@@ -32,7 +32,11 @@ function setChannel(prefixes, message, targetChannelID, ResetSSRFlag, atkmsg) {
         ResetSSRFlag = ResetSSRFlag ? false : true
         message.channel.send(`change ${ResetSSRFlag}`)
     };
-    return [targetChannelID, ResetSSRFlag]
+    if (message.content.includes(`${prefixes}duo`)) {
+        duoFlag = duoFlag === false ? true : false
+        message.channel.send(`DuoMode ${duoFlag}`)
+    };
+    return [targetChannelID, ResetSSRFlag, duoFlag]
 }
 
 async function moderate(client, message, prefix, atkmsg) {
@@ -40,18 +44,41 @@ async function moderate(client, message, prefix, atkmsg) {
         const channel = await client.channels.fetch(message.channel.id);
         channel.send(message.content.slice(prefix.length + 3));
     };
-    if (message.content.includes(`${prefix}atk`)) {
+    if (message.content.includes(`${prefix}change`)) {
         atkmsg = atkmsg === "::atk" ? '::i f' : '::atk'
         message.channel.send(`change ${atkmsg}`)
+    };
+    if (message.content.includes(`${prefix}atk`)) {
+        message.channel.send('::atk')
+    };
+    if (message.content.includes(`${prefix}change`)) {
+        atkmsg = atkmsg === "::atk" ? '::i f' : '::atk'
+        message.channel.send(`change ${atkmsg}`)
+    };
+    if (message.content.includes(`${prefix}fb`)) {
+        message.channel.send('::i f')
+    };
+    if (message.content.includes(`${prefix}rmap`)) {
+        message.channel.send('::rmap')
+    };
+    if (message.content.includes(`${prefix}i`)) {
+        message.channel.send('::i')
+    };
+    if (message.content.includes(`${prefix}click`)) {
+        const args = message.content.slice(prefix.length).trim().split(" ").slice(1);
+        const msg = await message.channel.messages.fetch(args[0])
+        await clickButton(msg, parseInt(args[1]), parseInt(args[2]))
     };
 
     return atkmsg
 }
 
+
+
 module.exports = {
     setChannel: setChannel,
     clickButton: clickButton,
     Eval: Eval,
-    setChannel: setChannel,
     moderate: moderate,
 };
+
