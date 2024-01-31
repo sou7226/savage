@@ -51,10 +51,6 @@ async function moderate(client, message, prefix, atkmsg) {
     if (message.content.includes(`${prefix}atk`)) {
         message.channel.send('::atk')
     };
-    if (message.content.includes(`${prefix}change`)) {
-        atkmsg = atkmsg === "::atk" ? '::i f' : '::atk'
-        message.channel.send(`change ${atkmsg}`)
-    };
     if (message.content.includes(`${prefix}fb`)) {
         message.channel.send('::i f')
     };
