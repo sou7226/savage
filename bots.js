@@ -52,7 +52,8 @@ async function UsedElixir(client, message, atkmsg, coolTime, usedElixirCoolTime)
         message.content.includes(`<@${client.user.id}>はもうやられている！`)
     ) {
         await timeout(coolTime)
-        message.channel.send("::i e ")
+        message.channel.send(ResetSSRFlag && SSRFlag ? "::atk" : "::i e")
+        atkcounter++;
         await timeout(usedElixirCoolTime)
         message.channel.send(ResetSSRFlag && SSRFlag && atkcounter > 0 ? "::re" : atkmsg2)
         atkcounter++;
@@ -130,6 +131,7 @@ client2.on("messageCreate", async (message) => {
                 atkcounter++;
             }
         }
+        // time = setTimeout(sendMessage, Timeout);
         time = setTimeout(() => message.channel?.send(ResetSSRFlag && SSRFlag && atkcounter > 0 ? "::re" : atkmsg2 + " to"), Timeout)
     } catch (err) {
         console.error(err);
