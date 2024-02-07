@@ -1,3 +1,29 @@
+require('dotenv').config();
+const coolTime = parseInt(process.env.coolTime)
+const usedElixirCoolTime = parseInt(process.env.usedElixirCoolTime)
+const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const isKeepFighting = (client, message) => (
+    (message.content.includes(`${client.user.username}のHP:`) ||
+        message.content.includes(`<@${client.user.id}>はもうやられている`)) &&
+    !message.content.includes('を倒した！')
+);
+const isFightFb = (client, message) => (
+    !message?.content.includes('を倒した！') &&
+    message?.content.includes(`${client.user.username}の攻撃！`) ||
+    message?.content.includes("倒すなら拳で語り合ってください。")
+);
+const SSRMessage = (ResetSSRFlag, SSRFlag, atkcounter, atkmsg) => {
+    return ResetSSRFlag && SSRFlag && atkcounter > 0 ? "::re" : atkmsg;
+};
+const spawnSuperRareProcess = (message, SSRFlag, roleID) => {
+    message.channel.send(`<@&${roleID}>`)
+    SSRFlag = true
+}
+const sendMessage = async (message, content, ct = coolTime) => {
+    await timeout(ct);
+    message.channel.send(content);
+};
+
 async function Eval(message) {
     const args = message.content.split(" ").slice(1);
     try {
@@ -68,13 +94,40 @@ async function moderate(client, message, prefix, atkmsg) {
 
     return atkmsg
 }
-
-
+async function UsedElixir(client, message, atkmsg, ResetSSRFlag, SSRFlag, atkcounter) {
+    if (
+        message.content.includes(`${client.user.username}のHP:`) &&
+        !message.content.includes(`${client.user.username}はやられてしまった。。。`) &&
+        !message.content.includes('を倒した！')
+    ) {
+        await sendMessage(message, atkmsg, coolTime)
+    } else if (
+        message.content.includes(`${client.user.username}のHP:`) &&
+        message.content.includes(`${client.user.username}はやられてしまった。。。`) &&
+        !message.content.includes('を倒した！') ||
+        message.content.includes(`${client.user.username}のHP:`) &&
+        message.content.includes(`${client.user.username}は自滅してしまった。。。`) &&
+        !message.content.includes('を倒した！') ||
+        message.content.includes(`<@${client.user.id}>はもうやられている！`)
+    ) {
+        await sendMessage(message, ResetSSRFlag && SSRFlag ? "::atk" : "::i e")
+        atkcounter++;
+        await sendMessage(message, SSRMessage(ResetSSRFlag, SSRFlag, atkcounter, atkmsg), usedElixirCoolTime)
+        atkcounter++;
+    }
+    return atkcounter
+}
 
 module.exports = {
     setChannel: setChannel,
     clickButton: clickButton,
     Eval: Eval,
     moderate: moderate,
+    isKeepFighting: isKeepFighting,
+    isFightFb: isFightFb,
+    SSRMessage: SSRMessage,
+    spawnSuperRareProcess: spawnSuperRareProcess,
+    sendMessage: sendMessage,
+    UsedElixir: UsedElixir
 };
 
