@@ -16,11 +16,14 @@ const isKeepFighting = (client, message) => (
         message.content.includes(`<@${client.user.id}>はもうやられている`)) &&
     !message.content.includes('を倒した！')
 );
-const isKFightFB = (client, message) => (
+const isFightFb = (client, message) => (
     !message?.content.includes('を倒した！') &&
     message?.content.includes(`${client.user.username}の攻撃！`) ||
     message?.content.includes("倒すなら拳で語り合ってください。")
 );
+const SSRMessage = (atkmsg) => {
+    return ResetSSRFlag && SSRFlag && atkcounter > 0 ? "::re" : atkmsg;
+};
 console.log(`prefixes is ${prefixes}`)
 client1.once('ready', () => console.log(`${client1.user.username} is ${prefix1}`));
 client2.once('ready', () => console.log(`${client2.user.username} is ${prefix2}`));
@@ -32,34 +35,41 @@ let SSRFlag = false, ResetSSRFlag = true, atkFlag = "::atk", duoFlag = false
 let atkcounter = 0, time, targetChannelID;
 let atkmsg1 = "::atk", atkmsg2 = "::atk", atkmsg3 = "::atk", atkmsg4 = "::atk";
 
-
-
 async function UsedElixir(client, message, atkmsg, coolTime, usedElixirCoolTime) {
-    if (
-        message.content.includes(`${client.user.username}のHP:`) &&
-        !message.content.includes(`${client.user.username}はやられてしまった。。。`) &&
-        !message.content.includes('を倒した！')
-    ) {
-        await timeout(coolTime)
-        message.channel.send(atkmsg)
-    } else if (
-        message.content.includes(`${client.user.username}のHP:`) &&
-        message.content.includes(`${client.user.username}はやられてしまった。。。`) &&
-        !message.content.includes('を倒した！') ||
-        message.content.includes(`${client.user.username}のHP:`) &&
-        message.content.includes(`${client.user.username}は自滅してしまった。。。`) &&
-        !message.content.includes('を倒した！') ||
-        message.content.includes(`<@${client.user.id}>はもうやられている！`)
-    ) {
-        await timeout(coolTime)
-        message.channel.send(ResetSSRFlag && SSRFlag ? "::atk" : "::i e")
-        atkcounter++;
-        await timeout(usedElixirCoolTime)
-        message.channel.send(ResetSSRFlag && SSRFlag && atkcounter > 0 ? "::re" : atkmsg2)
-        atkcounter++;
-    }
-}
+    try {
+        if (
+            message.content.includes(`${client.user.username}のHP:`) &&
+            !message.content.includes(`${client.user.username}はやられてしまった。。。`) &&
+            !message.content.includes('を倒した！')
+        ) {
+            await timeout(coolTime)
+            message.channel.send(atkmsg)
+        } else if (
+            message.content.includes(`${client.user.username}のHP:`) &&
+            message.content.includes(`${client.user.username}はやられてしまった。。。`) &&
+            !message.content.includes('を倒した！') ||
+            message.content.includes(`${client.user.username}のHP:`) &&
+            message.content.includes(`${client.user.username}は自滅してしまった。。。`) &&
+            !message.content.includes('を倒した！') ||
+            message.content.includes(`<@${client.user.id}>はもうやられている！`)
+        ) {
+            await timeout(coolTime)
+            message?.channel.send(ResetSSRFlag && SSRFlag ? "::atk" : "::i e")
+            atkcounter++;
+            await timeout(usedElixirCoolTime)
+            message?.channel.send(SSRMessage(atkmsg))
+            atkcounter++;
+        }
 
+    } catch (err) {
+        console.error(err);
+    }
+
+}
+function spawnSuperRareProcess() {
+    message.channel.send(`<@&${process.env.ROLE_ID}>`)
+    SSRFlag = true
+}
 client1.on("messageCreate", async (message) => {
     try {
         if (!adminId.has(message.author.id) && message.guild.id.includes(guildIds)) return;
@@ -73,8 +83,7 @@ client1.on("messageCreate", async (message) => {
             if (embedTitle.includes("が待ち構えている")) {
                 SSRFlag = false
                 if (message.embeds[0].author.name.includes("超激レア")) {
-                    message.channel.send(`<@&${process.env.ROLE_ID}>`)
-                    SSRFlag = true
+                    spawnSuperRareProcess()
                 }
                 if (message.embeds[0].author.name &&
                     message.embeds[0].author.name.includes("超強敵") ||
@@ -99,7 +108,7 @@ client1.on("messageCreate", async (message) => {
                     message.channel.send(atkmsg1)
                 }
             } else if (atkmsg4 === "::i f") {
-                if (isKFightFB(client4, message)) {
+                if (isFightFb(client4, message)) {
                     await timeout(coolTime)
                     message?.channel.send(atkmsg1)
                 }
@@ -123,18 +132,17 @@ client2.on("messageCreate", async (message) => {
                 await UsedElixir(client1, message, atkmsg2, coolTime, usedElixirCoolTime)
             } else if (isKeepFighting(client1, message)) {
                 await timeout(coolTime)
-                message.channel.send(ResetSSRFlag && SSRFlag && atkcounter > 0 ? "::re" : atkmsg2)
+                message.channel.send(SSRMessage(atkmsg2))
                 atkcounter++;
             }
         } else if (atkmsg1 === "::i f") {
-            if (isKFightFB(client1, message)) {
+            if (isFightFb(client1, message)) {
                 await timeout(coolTime)
-                message?.channel.send(ResetSSRFlag && SSRFlag && atkcounter > 0 ? "::re" : atkmsg2)
+                message?.channel.send(SSRMessage(atkmsg2))
                 atkcounter++;
             }
         }
-        // time = setTimeout(sendMessage, Timeout);
-        time = setTimeout(() => message.channel?.send(ResetSSRFlag && SSRFlag && atkcounter > 0 ? "::re" : atkmsg2 + " to"), Timeout)
+        time = setTimeout(() => message.channel?.send(SSRMessage(atkmsg2) + " to"), Timeout)
     } catch (err) {
         console.error(err);
     }
@@ -146,7 +154,8 @@ client3.on("messageCreate", async (message) => {
         if (message.content.startsWith(prefix3)) {
             atkmsg3 = await functions.moderate(client3, message, prefix3, atkmsg3)
         }
-        if (targetChannelID == message.channel.id && !SSRFlag || !ResetSSRFlag) {
+        if (targetChannelID !== message.channel.id) return;
+        if (!SSRFlag || !ResetSSRFlag) {
             if (atkmsg2 === "::atk") {
                 if (duoFlag) return;
                 if (
@@ -156,7 +165,7 @@ client3.on("messageCreate", async (message) => {
                     message.channel.send(atkmsg3)
                 }
             } else if (atkmsg2 === "::i f") {
-                if (isKFightFB(client2, message)) {
+                if (isFightFb(client2, message)) {
                     await timeout(coolTime)
                     message?.channel.send(atkmsg3)
                 }
@@ -177,7 +186,7 @@ client4.on("messageCreate", async (message) => {
         if (atkmsg3 === "::atk") {
             await UsedElixir(client3, message, atkmsg4, coolTime, usedElixirCoolTime)
         } else if (atkmsg3 === "::i f") {
-            if (isKFightFB(client3, message)) {
+            if (isFightFb(client3, message)) {
                 await timeout(coolTime)
                 message?.channel.send(atkmsg4)
             }
