@@ -76,7 +76,9 @@ client1.on("messageCreate", async (message) => {
                     message.channel.send(`<@&${process.env.ROLE_ID}>`)
                     SSRFlag = true
                 }
-                if (message.embeds[0].author.name && message.embeds[0].author.name.includes("超強敵")) {
+                if (message.embeds[0].author.name &&
+                    message.embeds[0].author.name.includes("超強敵") ||
+                    embedTitle.includes("ジャックフロスト")) {
                     atkFlag = atkmsg1
                     atkmsg1 = "::i f"
                 }
