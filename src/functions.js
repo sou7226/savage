@@ -18,6 +18,7 @@ const SSRMessage = (ResetSSRFlag, SSRFlag, atkcounter, atkmsg) => {
 const spawnSuperRareProcess = (message, SSRFlag, roleID) => {
     message.channel.send(`<@&${roleID}>`)
     SSRFlag = true
+    return  SSRFlag
 }
 const sendMessage = async (message, content, ct = coolTime) => {
     await timeout(ct);
