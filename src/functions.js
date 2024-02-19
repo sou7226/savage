@@ -3,13 +3,13 @@ const coolTime = parseInt(process.env.coolTime)
 const usedElixirCoolTime = parseInt(process.env.usedElixirCoolTime)
 const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const isKeepFighting = (client, message) => (
-    (message.content.includes(`${client.user.username}のHP:`) ||
+    (message.content.includes(`${client.user.displayName}のHP:`) ||
         message.content.includes(`<@${client.user.id}>はもうやられている`)) &&
     !message.content.includes('を倒した！')
 );
 const isFightFb = (client, message) => (
     !message?.content.includes('を倒した！') &&
-    message?.content.includes(`${client.user.username}の攻撃！`) ||
+    message?.content.includes(`${client.user.displayName}の攻撃！`) ||
     message?.content.includes("倒すなら拳で語り合ってください。")
 );
 const SSRMessage = (ResetSSRFlag, SSRFlag, atkcounter, atkmsg) => {
@@ -18,7 +18,7 @@ const SSRMessage = (ResetSSRFlag, SSRFlag, atkcounter, atkmsg) => {
 const spawnSuperRareProcess = (message, SSRFlag, roleID) => {
     message.channel.send(`<@&${roleID}>`)
     SSRFlag = true
-    return  SSRFlag
+    return SSRFlag
 }
 const sendMessage = async (message, content, ct = coolTime) => {
     await timeout(ct);
@@ -57,11 +57,16 @@ async function setChannel(prefixes, message, targetChannelID, ResetSSRFlag, atkm
     }
     if (message.content.includes(`${prefixes}reset`)) {
         ResetSSRFlag = ResetSSRFlag ? false : true
-        message.channel.send(`change ${ResetSSRFlag}`)
+        message.channel.send(`超激レアリセットモード ${ResetSSRFlag}`)
     };
     if (message.content.includes(`${prefixes}duo`)) {
-        duoFlag = duoFlag === false ? true : false
-        message.channel.send(`DuoMode ${duoFlag}`)
+        duoFlag = duoFlag ? false : true
+        message.channel.send(`デュオモード ${duoFlag}`)
+    };
+    if (message.content.includes(`${prefixes}parasite`)) {
+        ResetSSRFlag = false
+        ParasiteFlag = ResetSSRFlag ? false : true
+        message.channel.send(`寄生モード ${ParasiteFlag}`)
     };
     return [targetChannelID, ResetSSRFlag, duoFlag]
 }
@@ -97,17 +102,17 @@ async function moderate(client, message, prefix, atkmsg) {
 }
 async function UsedElixir(client, message, atkmsg, ResetSSRFlag, SSRFlag, atkcounter) {
     if (
-        message.content.includes(`${client.user.username}のHP:`) &&
-        !message.content.includes(`${client.user.username}はやられてしまった。。。`) &&
+        message.content.includes(`${client.user.displayName}のHP:`) &&
+        !message.content.includes(`${client.user.displayName}はやられてしまった。。。`) &&
         !message.content.includes('を倒した！')
     ) {
-        await sendMessage(message, atkmsg, coolTime)
+        await sendMessage(message, atkmsg)
     } else if (
-        message.content.includes(`${client.user.username}のHP:`) &&
-        message.content.includes(`${client.user.username}はやられてしまった。。。`) &&
+        message.content.includes(`${client.user.displayName}のHP:`) &&
+        message.content.includes(`${client.user.displayName}はやられてしまった。。。`) &&
         !message.content.includes('を倒した！') ||
-        message.content.includes(`${client.user.username}のHP:`) &&
-        message.content.includes(`${client.user.username}は自滅してしまった。。。`) &&
+        message.content.includes(`${client.user.displayName}のHP:`) &&
+        message.content.includes(`${client.user.displayName}は自滅してしまった。。。`) &&
         !message.content.includes('を倒した！') ||
         message.content.includes(`<@${client.user.id}>はもうやられている！`)
     ) {
