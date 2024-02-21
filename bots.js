@@ -10,7 +10,6 @@ const functions = require('./src/functions');
 const Timeout = parseInt(process.env.Timeout);
 const roleID = process.env.ROLE_ID
 const prefixes = process.env.prefixes, prefix1 = process.env.prefix1, prefix2 = process.env.prefix2, prefix3 = process.env.prefix3, prefix4 = process.env.prefix4
-
 console.log(`prefixes is ${prefixes}`)
 client1.once('ready', () => console.log(`${client1.user.displayName} is ${prefix1}`));
 client2.once('ready', () => console.log(`${client2.user.displayName} is ${prefix2}`));
@@ -41,21 +40,21 @@ client1.on("messageCreate", async (message) => {
         const embedTitle = message.embeds[0].title;
         if (embedTitle.includes("が待ち構えている")) {
             SSRFlag = false
-            if (checkSSRRank(message.embeds[0].author.name)) {
-                SSRFlag = functions.spawnSuperRareProcess(message, SSRFlag, roleID)
-            }
+            atkcounter = 0;
+            atkmsg1 = atkFlag
             if (message.embeds[0].author.name &&
                 message.embeds[0].author.name.includes("超強敵") ||
                 embedTitle.includes("ジャックフロスト")) {
                 atkFlag = atkmsg1
                 atkmsg1 = "::i f"
             }
-            await functions.sendMessage(message, atkmsg1)
-        } else if (embedTitle.includes("戦闘結果")) {
-            atkcounter = 0;
-            atkmsg1 = atkFlag
+            if (checkSSRRank(message.embeds[0].author.name)) {
+                SSRFlag = functions.spawnSuperRareProcess(message, SSRFlag, roleID)
+                Timeout = 60000 * 5
+            } else {
+                await functions.sendMessage(message, atkmsg1)
+            }
         }
-    } else {
         if (duoFlag && functions.isKeepFighting(client2, message)) {
             await functions.sendMessage(message, atkmsg1)
         }
