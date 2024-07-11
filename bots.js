@@ -1,7 +1,7 @@
 
 require('dotenv').config();
 
-const { Client } = require('discord.js-selfbot-v13');
+const { Client } = require('discord.js');
 const client1 = new Client({ checkUpdate: false });
 const client2 = new Client({ checkUpdate: false });
 const client3 = new Client({ checkUpdate: false });
